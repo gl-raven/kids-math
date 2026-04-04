@@ -1,0 +1,142 @@
+<script setup lang="ts">
+import { onMounted, ref } from 'vue';
+import type { Operation } from '../types/math';
+
+const optionsSize = 4;
+
+const props = defineProps<{
+    divideDigits: number[]
+    multiplyDigits: number[]
+}>();
+
+const num1 = ref<number>(0);
+const num2 = ref<number>(0);
+const operator = ref<Operation>("multiply");
+const message = ref<string>("");
+const options = ref<number[]>([])
+
+const generateQuestion = () => {
+    message.value = '';
+
+    const availableModes: ("multiply" | "divide")[] = [];
+
+    if (props.multiplyDigits.length > 0) availableModes.push("multiply");
+    if (props.divideDigits.length > 0) availableModes.push("divide");
+
+    operator.value = availableModes[Math.floor(Math.random() * availableModes.length)];
+
+    if (availableModes.length === 0) {
+        message.value = "Сначала выбери числа в меню!"
+        return
+    }
+
+    operator.value = availableModes[Math.floor(Math.random() * availableModes.length)];
+
+    let correctAnswer = 0;
+
+    if (operator.value == 'multiply') {
+        num2.value = props.multiplyDigits[Math.floor(Math.random() * props.multiplyDigits.length)];
+        num1.value = Math.floor(Math.random() * 10);
+
+        correctAnswer = num2.value * num1.value;
+    } else {
+        const divisor = props.divideDigits[Math.floor(Math.random() * props.divideDigits.length)]
+        const quotient = Math.floor(Math.random() * 10) + 1 // Частное (ответ)
+
+        num1.value = divisor * quotient // Это будет наше делимое
+        num2.value = divisor           // Это делитель
+        correctAnswer = quotient
+    }
+
+    const set = new Set<number>();
+    set.add(correctAnswer);
+    while (set.size < optionsSize) {
+        const offset = Math.floor(Math.random() * 5) + 1
+        const wrong = Math.random() > 0.5 ? correctAnswer + offset : correctAnswer - offset
+        if (wrong >= 0) set.add(wrong)
+    }
+
+    options.value = Array.from(set).sort(() => Math.random() - 0.5)
+}
+
+const checkValue = (val: number): void => {
+    const isCorrect = operator.value === "multiply" ?
+        num1.value * num2.value === val
+        : val === num1.value / num2.value;
+
+    if (isCorrect) {
+        message.value = '🌟 Правильно!'
+        setTimeout(generateQuestion, 1200)
+    } else {
+        message.value = '❌ Попробуй еще раз'
+    }
+}
+
+onMounted(generateQuestion);
+</script>
+<template>
+    <div class="game">
+        <div v-if="multiplyDigits.length || divideDigits.length">
+            <div class="example">
+                <span>{{ num1 }}</span>
+                <span>{{ operator === 'multiply' ? '×' : '÷' }}</span>
+                <span>{{ num2 }}</span>
+                <span> = ?</span>
+            </div>
+            <div class="answers">
+                <button v-for="value in options" @click="checkValue(value)" :key="value">{{ value }}</button>
+            </div>
+            <div class="answer">{{ message }}</div>
+        </div>
+        <div v-else>
+            <p>Пожалуйста, выберите хотя бы одно число для игры.</p>
+        </div>
+    </div>
+</template>
+
+<style scoped>
+.game {
+    text-align: center;
+    padding: 20px;
+}
+
+.example {
+    font-size: 4rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #2c3e50;
+}
+
+.example span {
+    margin: 0 10px;
+}
+
+.answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.answer-btn {
+    padding: 20px;
+    font-size: 1.5rem;
+    border: 2px solid #42b883;
+    background: white;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.answer-btn:hover {
+    background: #42b883;
+    color: white;
+}
+
+.status {
+    font-size: 1.2rem;
+    margin-top: 20px;
+    min-height: 1.5em;
+}
+</style>

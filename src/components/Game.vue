@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import type { Operation } from '../types/math';
+import type { MathTaskHistoryItem, Operation } from '../types/math';
 
 const optionsSize = 4;
 
@@ -13,17 +13,20 @@ const num1 = ref<number>(0);
 const num2 = ref<number>(0);
 const operator = ref<Operation>("multiply");
 const message = ref<string>("");
-const options = ref<number[]>([])
+const options = ref<number[]>([]);
+const history = ref<MathTaskHistoryItem[]>([]);
+const questionsCount = ref<number>(0);
+const correctAnswersCount = ref<number>(0);
+let isFirst = true;
 
 const generateQuestion = () => {
+    isFirst = true;
     message.value = '';
-
+    questionsCount.value++;
     const availableModes: ("multiply" | "divide")[] = [];
 
     if (props.multiplyDigits.length > 0) availableModes.push("multiply");
     if (props.divideDigits.length > 0) availableModes.push("divide");
-
-    operator.value = availableModes[Math.floor(Math.random() * availableModes.length)];
 
     if (availableModes.length === 0) {
         message.value = "Сначала выбери числа в меню!"
@@ -60,16 +63,29 @@ const generateQuestion = () => {
 }
 
 const checkValue = (val: number): void => {
+
     const isCorrect = operator.value === "multiply" ?
         num1.value * num2.value === val
         : val === num1.value / num2.value;
 
     if (isCorrect) {
+        if (isFirst) {
+            correctAnswersCount.value++;
+        }
         message.value = '🌟 Правильно!'
         setTimeout(generateQuestion, 1200)
     } else {
-        message.value = '❌ Попробуй еще раз'
+        isFirst = false;
+        message.value = '❌ Попробуй еще раз';
     }
+
+    history.value.unshift({
+        num1: num1.value,
+        num2: num2.value,
+        operation: operator.value,
+        result: val,
+        isCorrect: isCorrect
+    })
 }
 
 onMounted(generateQuestion);
@@ -92,6 +108,21 @@ onMounted(generateQuestion);
             <p>Пожалуйста, выберите хотя бы одно число для игры.</p>
         </div>
     </div>
+    <div>
+        <div><b>Статистика</b></div>
+        <div>
+            <b>Пример:</b> {{ questionsCount }},
+            <b> без ошибок:</b> {{ correctAnswersCount }}
+        </div>
+    </div>
+    <div>
+        <b>История</b>
+        <div v-for="item in history" :key="item.result">
+            {{ item.num1 }} {{ item.operation === 'multiply' ? '×' : '÷' }} {{ item.num2 }} = {{ item.result }} {{
+                item.isCorrect ? '✅' : '❌' }}
+        </div>
+    </div>
+    <!-- Добавить историю правильных и не правильных кликов, количество игр и игр правильных с первого раза, логи кликов, время игры, -->
 </template>
 
 <style scoped>

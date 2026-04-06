@@ -44,11 +44,11 @@ function start(event: Event): void {
 <h1>Математика</h1>
     <div>
         <h3>Умножение</h3>
-        <div v-for="value in digits_array"><select-digit :value="value" identify="multiply" @handle-checkbox-change="handleMultiplyCheckboxChange"/></div>
+        <div v-for="value in [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]"><select-digit :value="value" identify="multiply" @handle-checkbox-change="handleMultiplyCheckboxChange"/></div>
     </div>
     <div>
         <h3>Деление</h3>
-        <div v-for="value in digits_array"><select-digit :value="value" identify="divide" @handle-checkbox-change="handleDevideCheckboxChangeF"/></div>
+        <div v-for="value in  [1, 2, 3, 4, 5, 6, 7, 8, 9]"><select-digit :value="value" identify="divide" @handle-checkbox-change="handleDevideCheckboxChangeF"/></div>
     </div>
     <div>
         <button @click="start">Запуск</button>

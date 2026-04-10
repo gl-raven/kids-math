@@ -36,7 +36,7 @@ const decrease = () => { if (fontSize.value > minFontSize) fontSize.value -= 2 }
 <template>
     <div class="top-buttons-container">
         <button class="sup" @click="increase">+ Шрифт</button>&nbsp;
-        <button class="sub" @click="decrease">- Шрифт</button> &nbsp;({{ fontSize }} пикселя)
+        <button class="sub" @click="decrease">- Шрифт</button> &nbsp;(Текущий размер {{ fontSize }})
     </div>
     <div v-if="screen === 'select'">
         <SelectScreen @startGame="startGame" />

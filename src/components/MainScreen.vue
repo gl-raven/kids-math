@@ -7,10 +7,6 @@ import Game from './Game.vue';
 
 let screen = ref<AppWindow>("select");
 
-function changeScreen(newScreen: AppWindow) {
-    screen.value = newScreen;
-}
-
 const maxFontSize = 32;
 const minFontSize = 12;
 

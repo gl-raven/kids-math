@@ -7,8 +7,6 @@ const emit = defineEmits<{
 //   (e: 'update', value: string): void
 }>()
 
-const digits_array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-
 const divideDigits = ref<number[]>([]);
 
 // Умножение
@@ -32,7 +30,7 @@ function handleDevideCheckboxChangeF(value: number): void {
     }
 }
 
-function start(event: Event): void {
+function start(): void {
     emit('startGame', divideDigits.value, multiplyDigits.value);
 }
 

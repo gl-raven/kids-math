@@ -1,0 +1,1 @@
+export type AppWindow = "select" | "game";

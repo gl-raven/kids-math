@@ -1,1 +1,0 @@
-export type Window = "select" | "app"

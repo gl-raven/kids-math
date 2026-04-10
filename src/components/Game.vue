@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import type { MathTaskHistoryItem, Operation } from '../types/math';
 
+const emit = defineEmits<{
+  (e: 'selectScreen'): void
+//   (e: 'update', value: string): void
+}>()
 const optionsSize = 4;
 
 const props = defineProps<{
@@ -18,6 +22,8 @@ const history = ref<MathTaskHistoryItem[]>([]);
 const questionsCount = ref<number>(0);
 const correctAnswersCount = ref<number>(0);
 let isFirst = true;
+let timer: ReturnType <typeof setInterval> | null = null;
+const seconds = ref<number>(0);
 
 const generateQuestion = () => {
     isFirst = true;
@@ -87,8 +93,38 @@ const checkValue = (val: number): void => {
         isCorrect: isCorrect
     })
 }
+const stopTimer = () => {
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
+  }
+};
 
-onMounted(generateQuestion);
+const startTimer = () => {
+  if (timer) return;
+  timer = setInterval(() => {
+    seconds.value++;
+  }, 1000);
+};
+
+const formattedTime = computed(() => {
+  const mins = Math.floor(seconds.value / 60);
+  const secs = seconds.value % 60;
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+});
+
+function selectScreen() {
+    emit('selectScreen');
+}
+
+
+onMounted(() => {
+    generateQuestion();
+    startTimer();
+});
+onUnmounted(() => {
+    stopTimer();
+})
 </script>
 <template>
     <div class="game">
@@ -108,6 +144,8 @@ onMounted(generateQuestion);
             <p>Пожалуйста, выберите хотя бы одно число для игры.</p>
         </div>
     </div>
+    <div><button @click="selectScreen">К выбору действий и цифр</button></div>
+    <div>Время: <span>{{ formattedTime }}</span></div>
     <div>
         <div><b>Статистика</b></div>
         <div>
@@ -118,8 +156,7 @@ onMounted(generateQuestion);
     <div>
         <b>История</b>
         <div v-for="item in history" :key="item.result">
-            {{ item.num1 }} {{ item.operation === 'multiply' ? '×' : '÷' }} {{ item.num2 }} = {{ item.result }} {{
-                item.isCorrect ? '✅' : '❌' }}
+            {{ item.isCorrect ? '✅' : '❌' }} {{ item.num1 }} {{ item.operation === 'multiply' ? '×' : '÷' }} {{ item.num2 }} = {{ item.result }} 
         </div>
     </div>
     <!-- Добавить историю правильных и не правильных кликов, количество игр и игр правильных с первого раза, логи кликов, время игры, -->
@@ -146,8 +183,9 @@ onMounted(generateQuestion);
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
-    max-width: 300px;
+    max-width: 300px; 
     margin: 0 auto;
+    padding-top: 20px;
 }
 
 .answer-btn {

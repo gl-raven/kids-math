@@ -21,5 +21,5 @@ const handleCheckboxChange = (event: Event): void => {
 
 <template>
     <input type="checkbox" :value="value" :id="'check-' + (identify ?? '') + '-' + value " @change="handleCheckboxChange" /><label
-        :for="'check-' + (identify ?? '') + '-' + value">{{ value }}</label>
+        :for="'check-' + (identify ?? '') + '-' + value">&nbsp;{{ value }}</label>
 </template>

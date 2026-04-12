@@ -3,6 +3,7 @@
 defineProps<{
     value: number
     identify?: string
+    checked: boolean
 }>()
 
 
@@ -20,6 +21,6 @@ const handleCheckboxChange = (event: Event): void => {
 </script>
 
 <template>
-    <input type="checkbox" :value="value" :id="'check-' + (identify ?? '') + '-' + value " @change="handleCheckboxChange" /><label
+    <input type="checkbox" :value="value" :id="'check-' + (identify ?? '') + '-' + value " @change="handleCheckboxChange" :checked="checked"/><label
         :for="'check-' + (identify ?? '') + '-' + value">&nbsp;{{ value }}</label>
 </template>

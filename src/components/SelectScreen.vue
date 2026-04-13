@@ -62,7 +62,7 @@ function updateDivideDigits(): void {
 
 <template>
 
-    <h1 class="text-center">Математика</h1>
+    <h1 class="text-center">Математика (1 - 3 класс)</h1>
     <div>
         <h3>Умножение</h3>
         <div>
